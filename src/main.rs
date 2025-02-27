@@ -12,21 +12,47 @@ fn main() {
 fn App() -> Element {
     rsx! {
         document::Title { "FastUp - Coming Soon" }
+        document::Meta { name: "viewport", content: "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" }
+        document::Meta { name: "description", content: "FastUp - Lightning-fast deployments for your web applications" }
+        document::Meta { name: "theme-color", content: "#7e22ce" }
         document::Link { rel: "icon", href: FAVICON }
         document::Link { rel: "stylesheet", href: MAIN_CSS }
         document::Link { rel: "stylesheet", href: TAILWIND_CSS }
         style { {r#"
             /* Base styles */
-            body {
+            * {
+                box-sizing: border-box;
                 margin: 0;
-                font-family: system-ui, -apple-system, sans-serif;
+                padding: 0;
+            }
+            
+            html, body {
+                margin: 0;
+                padding: 0;
+                font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
                 color: white;
                 background: linear-gradient(135deg, #4338ca, #7e22ce, #ec4899);
                 background-size: 200% 200%;
                 animation: gradientMove 15s ease infinite;
                 overflow-x: hidden;
+                width: 100%;
+                height: 100%;
+                -webkit-text-size-adjust: 100%;
+            }
+            
+            body {
+                display: flex;
+                flex-direction: column;
                 min-height: 100vh;
-                width: 100vw;
+                min-height: -webkit-fill-available;
+                position: relative;
+            }
+            
+            /* Mobile viewport height fix */
+            @supports (-webkit-touch-callout: none) {
+                body, .container {
+                    min-height: -webkit-fill-available;
+                }
             }
             
             /* Gradient animation */
@@ -36,7 +62,7 @@ fn App() -> Element {
                 100% { background-position: 0% 50%; }
             }
             
-            /* Animated blobs */
+            /* Animated blobs - scaled for different devices */
             .blob {
                 position: fixed;
                 border-radius: 50%;
@@ -45,6 +71,9 @@ fn App() -> Element {
                 mix-blend-mode: screen;
                 animation: blobFloat 10s infinite ease-in-out;
                 z-index: -1;
+                will-change: transform;
+                pointer-events: none;
+                transform: translateZ(0);
             }
             
             @keyframes blobFloat {
@@ -55,26 +84,32 @@ fn App() -> Element {
             }
             
             .blob-1 {
-                width: 500px;
-                height: 500px;
+                width: 35vw;
+                height: 35vw;
+                max-width: 500px;
+                max-height: 500px;
                 background-color: rgba(139, 92, 246, 0.5);
-                left: -100px;
-                top: -100px;
+                left: -10vw;
+                top: -10vw;
                 animation-delay: 0s;
             }
             
             .blob-2 {
-                width: 400px;
-                height: 400px;
+                width: 30vw;
+                height: 30vw;
+                max-width: 400px;
+                max-height: 400px;
                 background-color: rgba(236, 72, 153, 0.5);
-                right: -50px;
+                right: -5vw;
                 top: 0;
                 animation-delay: 2s;
             }
             
             .blob-3 {
-                width: 300px;
-                height: 300px;
+                width: 25vw;
+                height: 25vw;
+                max-width: 300px;
+                max-height: 300px;
                 background-color: rgba(59, 130, 246, 0.5);
                 left: 10%;
                 bottom: 10%;
@@ -82,20 +117,24 @@ fn App() -> Element {
             }
             
             .blob-4 {
-                width: 450px;
-                height: 450px;
+                width: 32vw;
+                height: 32vw;
+                max-width: 450px;
+                max-height: 450px;
                 background-color: rgba(245, 158, 11, 0.3);
                 right: 0;
-                bottom: -100px;
+                bottom: -10vw;
                 animation-delay: 3s;
             }
             
             /* Main container */
             .container {
+                width: 100%;
                 max-width: 1200px;
                 margin: 0 auto;
-                padding: 2rem 1rem;
+                padding: clamp(1rem, 5vw, 2rem);
                 min-height: 100vh;
+                min-height: -webkit-fill-available;
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
@@ -105,13 +144,13 @@ fn App() -> Element {
                 z-index: 10;
             }
             
-            /* Logo and title */
+            /* Logo and title - fluid sizing */
             .logo {
-                font-size: 3.5rem;
+                font-size: clamp(2rem, 5vw + 1rem, 3.5rem);
                 font-weight: 800;
                 letter-spacing: -0.025em;
                 line-height: 1.1;
-                margin-bottom: 1.5rem;
+                margin-bottom: clamp(1rem, 3vw, 1.5rem);
             }
             
             .logo-gradient {
@@ -123,53 +162,57 @@ fn App() -> Element {
             
             .badge {
                 display: inline-block;
-                margin-left: 0.75rem;
-                font-size: 1rem;
+                margin-left: 0.5rem;
+                font-size: clamp(0.75rem, 2vw, 1rem);
                 background-color: rgba(255, 255, 255, 0.1);
                 backdrop-filter: blur(4px);
-                padding: 0.25rem 0.75rem;
+                -webkit-backdrop-filter: blur(4px);
+                padding: 0.25rem 0.5rem;
                 border-radius: 0.5rem;
                 font-weight: 500;
                 vertical-align: middle;
             }
             
-            /* Tagline */
+            /* Tagline - fluid sizing */
             .tagline {
-                font-size: 1.25rem;
+                font-size: clamp(1rem, 2.5vw, 1.25rem);
                 max-width: 42rem;
-                margin: 0 auto 2rem;
+                margin: 0 auto clamp(1.5rem, 5vw, 2rem);
                 font-weight: 400;
                 opacity: 0.8;
                 line-height: 1.6;
+                padding: 0 clamp(0.5rem, 3vw, 1rem);
             }
             
-            /* Email form */
+            /* Email form - mobile-optimized */
             .email-form {
                 position: relative;
                 width: 100%;
                 max-width: 28rem;
-                margin: 0 auto 2.5rem;
+                margin: 0 auto clamp(1.5rem, 5vw, 2.5rem);
                 background-color: rgba(255, 255, 255, 0.1);
                 backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
                 border-radius: 0.5rem;
                 padding: 0.25rem;
                 overflow: hidden;
                 transition: all 0.3s ease;
             }
             
-            .email-form:hover {
+            .email-form:hover, .email-form:focus-within {
                 background: linear-gradient(to right, #06b6d4, #4ade80);
             }
             
             .email-form-inner {
                 display: flex;
+                flex-direction: row;
                 background-color: rgba(0, 0, 0, 0.3);
                 border-radius: 0.375rem;
                 overflow: hidden;
                 transition: all 0.3s ease;
             }
             
-            .email-form:hover .email-form-inner {
+            .email-form:hover .email-form-inner, .email-form:focus-within .email-form-inner {
                 background-color: rgba(0, 0, 0, 0.2);
             }
             
@@ -181,6 +224,9 @@ fn App() -> Element {
                 font-size: 1rem;
                 padding: 0.75rem 1rem;
                 outline: none;
+                min-width: 0; /* Prevents flex item from overflowing */
+                -webkit-appearance: none; /* Removes iOS styling */
+                border-radius: 0; /* Removes iOS styling */
             }
             
             .email-input::placeholder {
@@ -192,23 +238,28 @@ fn App() -> Element {
                 color: white;
                 font-size: 0.875rem;
                 font-weight: 500;
-                padding: 0.625rem 1.25rem;
+                padding: 0.625rem clamp(0.75rem, 3vw, 1.25rem);
                 border: none;
                 cursor: pointer;
                 transition: background-color 0.3s ease;
+                white-space: nowrap;
+                -webkit-appearance: none; /* Removes iOS styling */
+                border-radius: 0; /* Removes iOS styling */
+                -webkit-tap-highlight-color: transparent;
             }
             
-            .notify-btn:hover {
+            .notify-btn:hover, .notify-btn:active {
                 background-color: rgba(255, 255, 255, 0.2);
             }
             
-            /* Links */
+            /* Links - touch-friendly */
             .links {
                 display: flex;
                 flex-wrap: wrap;
                 justify-content: center;
-                gap: 1.5rem 1rem;
-                margin-bottom: 3rem;
+                gap: clamp(0.75rem, 3vw, 1.5rem);
+                margin-bottom: clamp(2rem, 5vw, 3rem);
+                width: 100%;
             }
             
             .link {
@@ -216,45 +267,99 @@ fn App() -> Element {
                 align-items: center;
                 color: rgba(255, 255, 255, 0.7);
                 text-decoration: none;
-                font-size: 0.875rem;
+                font-size: clamp(0.75rem, 2vw, 0.875rem);
                 font-weight: 500;
                 transition: color 0.3s ease;
+                padding: 0.5rem;
+                -webkit-tap-highlight-color: transparent;
             }
             
-            .link:hover {
+            .link:hover, .link:active {
                 color: rgba(255, 255, 255, 1);
             }
             
             .link svg {
                 margin-right: 0.5rem;
-                width: 1.25rem;
-                height: 1.25rem;
+                width: clamp(1rem, 3vw, 1.25rem);
+                height: clamp(1rem, 3vw, 1.25rem);
+                flex-shrink: 0;
             }
             
             /* Footer */
             .footer {
-                margin-top: 4rem;
+                margin-top: clamp(2rem, 8vw, 4rem);
                 color: rgba(255, 255, 255, 0.5);
-                font-size: 0.875rem;
+                font-size: clamp(0.75rem, 2vw, 0.875rem);
+                width: 100%;
+                padding: 0 1rem;
             }
             
             .separator {
                 margin: 0 0.5rem;
             }
             
-            /* Responsive */
+            /* Mobile-specific adjustments */
             @media (max-width: 640px) {
-                .logo {
-                    font-size: 2.5rem;
+                .container {
+                    padding-top: 2rem;
+                    padding-bottom: 2rem;
+                    justify-content: flex-start;
                 }
                 
-                .tagline {
-                    font-size: 1.125rem;
+                .email-form-inner {
+                    flex-direction: column;
+                }
+                
+                .email-input {
+                    padding: 0.75rem;
+                    text-align: center;
+                }
+                
+                .notify-btn {
+                    padding: 0.75rem;
+                    width: 100%;
                 }
                 
                 .links {
                     flex-direction: column;
-                    gap: 1rem;
+                    align-items: center;
+                }
+                
+                .link {
+                    padding: 0.75rem;
+                }
+                
+                .footer {
+                    flex-direction: column;
+                    gap: 0.5rem;
+                }
+            }
+            
+            /* Tablet-specific adjustments */
+            @media (min-width: 641px) and (max-width: 1024px) {
+                .container {
+                    padding: 3rem 2rem;
+                }
+                
+                .links {
+                    max-width: 80%;
+                }
+            }
+            
+            /* Dark mode preference support */
+            @media (prefers-color-scheme: dark) {
+                html {
+                    color-scheme: dark;
+                }
+            }
+            
+            /* Accessibility improvements */
+            @media (prefers-reduced-motion: reduce) {
+                *, ::before, ::after {
+                    animation-duration: 0.01ms !important;
+                    animation-iteration-count: 1 !important;
+                    transition-duration: 0.01ms !important;
+                    scroll-behavior: auto !important;
                 }
             }
         "#} }
@@ -295,7 +400,9 @@ fn Hero() -> Element {
                     input {
                         class: "email-input",
                         placeholder: "Enter your email for updates",
-                        r#type: "email"
+                        r#type: "email",
+                        autocomplete: "email",
+                        autocapitalize: "off"
                     }
                     button {
                         class: "notify-btn",

@@ -15,4 +15,4 @@ jobs:
           buildMode: "release"
           toolchain: "stable"
           outDirectory: "target/dx/landing/release/web/public"
-          rootPath: "/home/runner/work/web/web"
+          rootPath: "/home/runner/work/landing/landing"
